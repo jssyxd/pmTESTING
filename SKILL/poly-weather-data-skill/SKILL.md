@@ -41,7 +41,9 @@ Read `references/source-priority.md` before collection. Use `references/data-sch
 
 ## Open-Meteo requirements
 
-Open-Meteo can route default models dynamically. For this workflow, pass an explicit `models` value and save the request URL, returned latitude, longitude, elevation, units, timezone, `utc_offset_seconds`, model ID, source endpoint, and fetch timestamp. The bundled script handles only the Open-Meteo model part; it does not replace observation collection.
+Read `references/open-meteo-model-catalog.md` before choosing a model. Use jobs 2–16 as a controlled **model catalog**, not as independent observations. Pass an explicit `models` value except for job 6 (`best_match`), which intentionally omits `models` and must be labeled automatic/non-fixed. Save the request URL, returned latitude, longitude, elevation, units, timezone, `utc_offset_seconds`, requested model ID, catalog metadata, source endpoint, and fetch timestamp. The bundled script handles only the Open-Meteo model part; it does not replace observation collection.
+
+Never use one model's value to fill another model's null field. Do not treat `gfs_seamless` and `ncep_gfs_global`, or `icon_seamless` and `dwd_icon_global`, as independent evidence: each pair belongs to the same provider/model family. Label `ncep_hgefs025_ensemble_mean` as an **ensemble mean**, never as a deterministic single model. Do not claim a fixed upstream, fixed spatial resolution, or fixed model identity for `best_match`.
 
 Example:
 
@@ -52,7 +54,7 @@ python scripts/fetch_openmeteo_bundle.py \
   --out-dir ./out/ZGGG
 ```
 
-For an all-null response, create a quality record with `status=data_unavailable`; do not silently retry with `best_match`.
+For an all-null response, create a quality record with `status=data_unavailable`; do not silently retry with `best_match`. `best_match` may only be collected as its own job 6 series and never as an implicit replacement.
 
 ## HTML audit view
 
