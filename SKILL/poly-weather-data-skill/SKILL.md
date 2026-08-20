@@ -56,6 +56,8 @@ python scripts/fetch_openmeteo_bundle.py \
 
 For an all-null response, create a quality record with `status=data_unavailable`; do not silently retry with `best_match`. `best_match` may only be collected as its own job 6 series and never as an implicit replacement.
 
+To independently audit the entire catalog after a model or endpoint change, run `scripts/validate_openmeteo_catalog.py` and then `scripts/summarize_catalog_validation.py`. Save the JSON payload and Markdown matrix with the date, airport, window and request timestamp. The matrix is a point-in-time execution record; repeat it rather than assuming a past pass applies to a new date.
+
 ## HTML audit view
 
 Copy `templates/weather_data_dashboard.html` and populate it only from saved quality summaries and long tables. The page must distinguish `available`, `partial`, and `data_unavailable`; display source lineage and source-specific limitations. The HTML is an audit artifact, not a replacement for raw files.
