@@ -1,0 +1,111 @@
+{
+  "created_at_utc": "2026-08-20T18:54:24.015649+00:00",
+  "timezone": "Asia/Shanghai",
+  "anchor_hour_local": "2026-08-21T02:00:00+08:00",
+  "history_window": {
+    "end_exclusive": "2026-08-21T02:00:00+08:00",
+    "expected_hours": 72,
+    "start_inclusive": "2026-08-18T02:00:00+08:00"
+  },
+  "future_window": {
+    "end_inclusive": "2026-08-22T02:00:00+08:00",
+    "expected_hours": 24,
+    "start_exclusive": "2026-08-21T02:00:00+08:00"
+  },
+  "models": {
+    "best_match": {
+      "history_rows": 72,
+      "history_expected": 72,
+      "future_rows": 24,
+      "future_expected": 24,
+      "history_complete": true,
+      "future_complete": true,
+      "null_temperature_rows": 0,
+      "null_precipitation_rows": 0,
+      "null_cloud_rows": 0
+    },
+    "ecmwf_aifs025_single": {
+      "history_rows": 72,
+      "history_expected": 72,
+      "future_rows": 24,
+      "future_expected": 24,
+      "history_complete": true,
+      "future_complete": true,
+      "null_temperature_rows": 0,
+      "null_precipitation_rows": 0,
+      "null_cloud_rows": 0
+    },
+    "ecmwf_ifs": {
+      "history_rows": 72,
+      "history_expected": 72,
+      "future_rows": 24,
+      "future_expected": 24,
+      "history_complete": true,
+      "future_complete": true,
+      "null_temperature_rows": 0,
+      "null_precipitation_rows": 0,
+      "null_cloud_rows": 0
+    },
+    "gfs_seamless": {
+      "history_rows": 72,
+      "history_expected": 72,
+      "future_rows": 24,
+      "future_expected": 24,
+      "history_complete": true,
+      "future_complete": true,
+      "null_temperature_rows": 0,
+      "null_precipitation_rows": 0,
+      "null_cloud_rows": 0
+    },
+    "icon_seamless": {
+      "history_rows": 72,
+      "history_expected": 72,
+      "future_rows": 24,
+      "future_expected": 24,
+      "history_complete": true,
+      "future_complete": true,
+      "null_temperature_rows": 0,
+      "null_precipitation_rows": 0,
+      "null_cloud_rows": 0
+    }
+  },
+  "metar": {
+    "actual_observation_rows": 143,
+    "numeric_precipitation_rule": "null unless raw AWC JSON supplies precip",
+    "cloud_rule": "METAR layers are categorical and are not converted to percent"
+  },
+  "taf": {
+    "current": {
+      "status_code": 200,
+      "retrieved_at_utc": "2026-08-20T18:54:00Z",
+      "request_url": "https://aviationweather.gov/api/data/taf?ids=ZGGG",
+      "raw_taf": "TAF ZGGG 201503Z 2018/2124 09003MPS 8000 BKN040 TX34/2107Z TN27/2022Z TN28/2122Z \n  TEMPO 2106/2109 TSRA SCT026CB BKN033",
+      "tx_tn": [
+        {
+          "kind": "TX",
+          "temperature_c": 34,
+          "temperature_f": 93,
+          "day_hour_utc": "2107"
+        },
+        {
+          "kind": "TN",
+          "temperature_c": 27,
+          "temperature_f": 81,
+          "day_hour_utc": "2022"
+        },
+        {
+          "kind": "TN",
+          "temperature_c": 28,
+          "temperature_f": 82,
+          "day_hour_utc": "2122"
+        }
+      ]
+    },
+    "history_72h_status": "not_collected_by_current_AWC_endpoint",
+    "history_72h_rule": "use Ogimet range query or another archival source; report null if no raw historical TAF is returned"
+  },
+  "weather_underground": {
+    "status": "requires_rendered_page_adapter",
+    "cloud_cover_pct_rule": "null when the WU table provides no numeric cloud cover"
+  }
+}

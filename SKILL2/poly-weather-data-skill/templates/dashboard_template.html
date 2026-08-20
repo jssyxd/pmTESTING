@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>机场天气数据看板</title>
+  <style>
+    body { font: 14px/1.45 system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; margin: 24px; color: #202124; }
+    h1, h2 { margin: 0 0 8px; } h2 { border-bottom: 1px solid #bbb; padding-bottom: 4px; margin-top: 28px; }
+    .meta { background: #f6f7f8; border: 1px solid #ddd; padding: 10px; }
+    .ok { color: #16723a; font-weight: 700; } .warn { color: #8b4a00; font-weight: 700; } .bad { color: #a61b1b; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; font-variant-numeric: tabular-nums; }
+    th, td { border: 1px solid #d6d6d6; padding: 5px 7px; text-align: left; white-space: nowrap; }
+    th { background: #f0f0f0; } .source { word-break: break-all; white-space: normal; }
+    details { margin: 8px 0; } pre { white-space: pre-wrap; margin: 8px 0; }
+  </style>
+</head>
+<body>
+  <h1>机场天气数据看板</h1>
+  <div class="meta">
+    <strong>站点：</strong>[城市] / [ICAO]；<strong>坐标：</strong>[纬度], [经度]；<strong>时区：</strong>[时区]；<strong>抓取：</strong>[UTC 时间]
+  </div>
+  <h2>来源状态</h2>
+  <table><thead><tr><th>页面</th><th>数据类型</th><th>优先级路径</th><th>状态</th><th>覆盖/缺失说明</th></tr></thead>
+    <tbody><tr><td>作业 0</td><td>WU 未来</td><td>渲染分时页</td><td class="warn">[状态]</td><td>[说明]</td></tr></tbody>
+  </table>
+  <h2>作业 1：TAF</h2>
+  <p><strong>强制数据血缘声明：</strong>本轮使用的观测源是无，模型源是机场 TAF，API/网页层是 [来源]；是否存在上下游依赖：[说明]。</p>
+  <table><thead><tr><th>原始 TAF</th><th>TX/TN 原文</th><th>本地时间</th><th>温度</th></tr></thead><tbody><!-- 逐项填入 TX/TN，不生成小时序列 --></tbody></table>
+  <h2>作业 2–6：Open-Meteo 模式小时序列</h2>
+  <p><strong>强制数据血缘声明：</strong>本轮使用的观测源是无，模型源是 [模型]，API 层是 Open-Meteo；是否存在上下游依赖：Open-Meteo 聚合上游数值模式，不是机场实况。</p>
+  <table><thead><tr><th>当地时间</th><th>窗口</th><th>温度 °C / °F</th><th>总降水 mm</th><th>雨量 mm</th><th>总云量 %</th><th>低/中/高云量 %</th><th>来源</th></tr></thead><tbody><!-- 从 open_meteo_hourly.csv 填充；原始空值写 null --></tbody></table>
+  <h2>答案 2：METAR 实况</h2>
+  <p><strong>强制数据血缘声明：</strong>本轮使用的观测源是 METAR，模型源是无，API 层是 [AWC/IEM]；是否存在上下游依赖：[说明]。</p>
+  <table><thead><tr><th>实际观测时间</th><th>温度 °C / °F</th><th>数值降水 mm</th><th>云况</th><th>天气现象</th><th>原始 METAR</th></tr></thead><tbody><!-- 不把云况代码换算百分比 --></tbody></table>
+  <details><summary>完整血缘与原始 URL</summary><pre>[写入请求 URL、原始文件、HTTP 状态、失败信息]</pre></details>
+</body>
+</html>
