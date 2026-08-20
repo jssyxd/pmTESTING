@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ZGGG 天气数据审计样本</title><style>
+body{margin:32px auto;max-width:1120px;padding:0 20px;color:#1d2733;background:#fff;font:14px/1.55 Arial,"Noto Sans CJK SC",sans-serif}h1{font-size:26px;margin:0 0 4px}h2{font-size:17px;border-bottom:1px solid #d9e0e7;padding-bottom:6px;margin-top:28px}.meta,.note{color:#566474}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px}.card{border:1px solid #d9e0e7;border-radius:6px;padding:13px}.card strong{display:block;font-size:17px;margin-top:3px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:8px;border-bottom:1px solid #e6ebf0;text-align:left;vertical-align:top}th{background:#f5f7f9}.ok{color:#126d37}.partial{color:#925c00}.bad{color:#b42318}.tag{font-size:12px;font-weight:700}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}</style></head>
+<body>
+<h1>ZGGG（广州白云）天气数据审计</h1><p class="meta">采集窗口：历史 2026-08-18 至 2026-08-20；未来窗口自 2026-08-21 02:00（UTC+8）起24小时。请求坐标：23.3933°N, 113.3083°E。</p><p class="note">本样本来自已保存原始响应与治理表；<span class="mono">Error = Observation - Model</span>。缺失模型和字段不填补。</p>
+<h2>数据源状态</h2><div class="grid">
+<div class="card"><span class="tag ok">AVAILABLE</span><strong>答案1：WU 历史网页</strong>72/72小时温度；范围27–35℃。降水`-`按缺失保存，云况仅保留文字。</div>
+<div class="card"><span class="tag ok">AVAILABLE</span><strong>答案2：AWC METAR API</strong>144份原报文，72/72小时温度；范围27–35℃。云层为分类层，未伪造百分比云量。</div>
+<div class="card"><span class="tag partial">PARTIAL</span><strong>IEM CN__ASOS METAR</strong>134份原报文，67小时温度；剩余窗口未返回。非美国站点雨量不用于分析。</div>
+<div class="card"><span class="tag ok">AVAILABLE</span><strong>ECMWF IFS 0.25°</strong>历史72/72、未来24/24；返回网格点23.50°N, 113.25°E。</div>
+<div class="card"><span class="tag ok">AVAILABLE</span><strong>CMA GRAPES Global</strong>历史72/72、未来24/24；返回网格点23.4375°N, 113.25°E。</div>
+<div class="card"><span class="tag bad">DATA_UNAVAILABLE</span><strong>GFS 0.25°</strong>请求成功但历史72/72和未来24/24变量均为null；未用其他模型补值。</div>
+</div>
+<h2>作业0与作业1</h2><table><thead><tr><th>作业</th><th>结论</th><th>血缘与限制</th></tr></thead><tbody><tr><td>作业0：WU未来预报</td><td class="bad">data_unavailable（逐小时）</td><td>公开网页仅见当日概要：约51%降水概率 / 0.19英寸、雷暴/多云文字描述；未见真实未来24小时分时表，未生成数列。</td></tr><tr><td>作业1：TAF</td><td>TX34℃（8月21日15:00 UTC+8）；TN27℃（8月21日06:00 UTC+8）</td><td>AWC TAF原文含<code>TX34/2107Z TN27/2022Z</code>及TEMPO TSRA；只提取极值与时刻，不推导分小时温度。</td></tr></tbody></table>
+<h2>未来24小时模型快照</h2><table><thead><tr><th>UTC+8</th><th>模型</th><th>2米温度(℃)</th><th>降水(mm)</th><th>总云量(%)</th><th>天气代码</th><th>状态</th></tr></thead><tbody>
+<tr><td>08/21 02:00</td><td>ECMWF IFS 0.25°</td><td>25.9</td><td>0.0</td><td>96</td><td>3</td><td class="ok">available</td></tr><tr><td>08/21 02:00</td><td>CMA GRAPES</td><td>26.2</td><td>0.0</td><td>4</td><td>0</td><td class="ok">available</td></tr>
+<tr><td>08/21 10:00</td><td>ECMWF IFS 0.25°</td><td>28.5</td><td>0.4</td><td>80</td><td>51</td><td class="ok">available</td></tr><tr><td>08/21 10:00</td><td>CMA GRAPES</td><td>29.6</td><td>0.8</td><td>93</td><td>53</td><td class="ok">available</td></tr>
+<tr><td>08/21 12:00</td><td>ECMWF IFS 0.25°</td><td>28.8</td><td>2.2</td><td>82</td><td>80</td><td class="ok">available</td></tr><tr><td>08/21 12:00</td><td>CMA GRAPES</td><td>31.7</td><td>0.0</td><td>100</td><td>3</td><td class="ok">available</td></tr>
+<tr><td>08/21 14:00</td><td>ECMWF IFS 0.25°</td><td>27.8</td><td>2.2</td><td>98</td><td>95</td><td class="ok">available</td></tr><tr><td>08/21 14:00</td><td>CMA GRAPES</td><td>32.8</td><td>0.0</td><td>100</td><td>3</td><td class="ok">available</td></tr>
+<tr><td>08/21 18:00</td><td>ECMWF IFS 0.25°</td><td>28.6</td><td>0.1</td><td>100</td><td>51</td><td class="ok">available</td></tr><tr><td>08/21 18:00</td><td>CMA GRAPES</td><td>29.7</td><td>0.0</td><td>100</td><td>3</td><td class="ok">available</td></tr>
+</tbody></table>
+<h2>答案交叉校验</h2><table><thead><tr><th>配对</th><th>匹配小时</th><th>平均误差(℃)</th><th>MAE(℃)</th><th>最大绝对误差(℃)</th></tr></thead><tbody><tr><td>WU − AWC METAR</td><td>69</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>WU − IEM METAR</td><td>64</td><td>0.000</td><td>0.000</td><td>0.000</td></tr><tr><td>AWC − IEM METAR</td><td>67</td><td>0.000</td><td>0.000</td><td>0.000</td></tr></tbody></table>
+<h2>数据血缘与限制</h2><ul><li>WU、AWC与IEM的温度高度一致，但AWC/IEM是METAR族的不同分发/处理路径，不能被当作统计独立样本倍增置信度。</li><li>观测源：WU历史网页、AWC METAR、IEM CN__ASOS；模型源：ECMWF IFS 0.25°、CMA GRAPES；API层：Open-Meteo、AWC、IEM；网页层：WU。</li><li>Open-Meteo返回的模型格点并不等同机场传感器坐标；各模型都保留了响应坐标、单位、时区与原始JSON。</li><li>网页与航空报文的云信息分别是文字/分类层，不能与模型百分比云量直接做数值相减。</li></ul>
+</body></html>

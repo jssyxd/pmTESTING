@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{airport_icao}} 天气数据审计样本</title>
+  <style>
+    body{margin:32px auto;max-width:1120px;padding:0 20px;color:#1d2733;background:#fff;font:14px/1.55 Arial,"Noto Sans CJK SC",sans-serif}
+    h1{font-size:26px;margin:0 0 4px} h2{font-size:17px;border-bottom:1px solid #d9e0e7;padding-bottom:6px;margin-top:28px}
+    .meta,.note{color:#566474}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:12px}
+    .card{border:1px solid #d9e0e7;border-radius:6px;padding:13px}.card strong{display:block;font-size:17px;margin-top:3px}
+    table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:8px;border-bottom:1px solid #e6ebf0;text-align:left;vertical-align:top}th{background:#f5f7f9}
+    .ok{color:#126d37}.partial{color:#925c00}.bad{color:#b42318}.tag{font-size:12px;font-weight:700}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  </style>
+</head>
+<body>
+  <h1>{{airport_icao}} 天气数据审计</h1>
+  <p class="meta">决策/采集时间：{{fetched_at_utc}} · 展示时区：UTC+8 · 坐标：{{requested_latitude}}, {{requested_longitude}}</p>
+  <p class="note">本页只呈现已保存的原始响应、治理长表与质量摘要；缺失值不填补。<span class="mono">Error = Observation - Model</span>。</p>
+  <h2>数据源状态</h2>
+  <div class="grid">{{source_status_cards}}</div>
+  <h2>逐小时未来24小时模型快照</h2>
+  <table><thead><tr><th>UTC+8</th><th>模型</th><th>2米温度 (℃)</th><th>降水 (mm)</th><th>总云量 (%)</th><th>天气代码</th><th>状态</th></tr></thead><tbody>{{forecast_rows}}</tbody></table>
+  <h2>交叉校验</h2>
+  <table><thead><tr><th>配对</th><th>匹配小时</th><th>平均误差 (℃)</th><th>MAE (℃)</th><th>最大绝对误差 (℃)</th></tr></thead><tbody>{{alignment_rows}}</tbody></table>
+  <h2>数据血缘与限制</h2>
+  <ul>{{lineage_limitations}}</ul>
+</body>
+</html>
