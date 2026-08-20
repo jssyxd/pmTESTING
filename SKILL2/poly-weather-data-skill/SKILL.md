@@ -36,12 +36,16 @@ Open-Meteo 的默认逐小时变量为 `temperature_2m`、`precipitation`、`rai
 | 作业 1：TAF | AWC `https://aviationweather.gov/api/data/taf?ids=ICAO` 当前原文 | Ogimet 历史表单（UTC 范围，存 TXT/HTML） | AALTROnav 日期页/人工原文 | 仅提取 `TXnn/DDHHZ`、`TNnn/DDHHZ`；无 72 小时归档即标不可用 |
 | 答案 2：METAR | AWC JSON：`/api/data/metar?ids=ICAO&format=json&taf=false&hours=72` | IEM：`/cgi-bin/request/asos.py?network=...&station=ICAO...` | WU/Metar-Taf.com 网页人工校对 | AWC/IEM 无数值降水时填 `null`；云况保留 `FEW/SCT/BKN/OVC/CAVOK`，不换算百分比 |
 | 作业 2–6：Open-Meteo | Historical Forecast API + Forecast API 显式模型 | Single Runs/归档证据重试并存运行元数据 | 上游公开模式文件另建 GRIB 链；网页人工核验 | 不能用其他模型补齐；`best_match` 不是固定单一模型 |
+| 作业 9：CMA GFS GRAPES | Historical Forecast 与 Forecast API 的 `cma_grapes_global` | CMA 公开模式文件另建 GRIB 链 | 仅供人工核验的网页 | 仅使用此模型返回的温度、降水和云量；不得用 GFS 或 WU 填补。 |
+| 作业 10：Météo-France ARPEGE World | Historical Forecast 与 Forecast API 的 `arpege_world` | Météo-France 公开模式文件另建 GRIB 链 | 仅供人工核验的网页 | 仅使用此模型返回的温度、降水和云量；不得用其他模式填补。 |
 
-Open-Meteo 依次请求 `ecmwf_ifs`、`ecmwf_aifs025_single`、`gfs_seamless`、`icon_seamless` 和无 `models` 的 `best_match`。历史端点为 `https://historical-forecast-api.open-meteo.com/v1/forecast`；未来端点为 `https://api.open-meteo.com/v1/forecast`。
+Open-Meteo 依次请求 `ecmwf_ifs`、`ecmwf_aifs025_single`、`gfs_seamless`、`icon_seamless` 和无 `models` 的 `best_match`。工作簿来源另请求 `dwd_icon_global`、`ncep_gfs_global`、`ecmwf_ifs04`、`ecmwf_ifs025`、`arpege_world`、`ukmo_global_deterministic_10km`、`jma_gsm`、`gem_global`、`bom_access_global`、`cma_grapes_global`、`ncep_aigfs025`、`ncep_hgefs025_ensemble_mean`。历史端点为 `https://historical-forecast-api.open-meteo.com/v1/forecast`；未来端点为 `https://api.open-meteo.com/v1/forecast`。
+
+先用工作簿的覆盖范围过滤地域模式。明确为欧洲、北美、日本、北欧、法国、英国/爱尔兰、加拿大或中欧的区域模式不覆盖 ZGGG；在审计表标为“地域排除”，保留工作簿行号和理由，**不执行无意义的 ZGGG 拉取**。HTTP 200 但所有目标变量均为 `null`（如实测的 ACCESS-G、IFS 0.4°）也必须标为“时间列完整、字段不可用”，不能计为可用作业。
 
 ## 工作流
 
-1. 运行 `scripts/fetch_weather_bundle.py` 一次性请求 Open-Meteo 五模型、AWC METAR、AWC 当前 TAF、IEM，并保存所有成功与失败响应。
+1. 运行 `scripts/fetch_weather_bundle.py` 一次性请求原始五模型、工作簿中所有适用于该坐标的全球模型、AWC METAR、AWC 当前 TAF、IEM，并保存所有成功与失败响应。
 2. 对 WU 作业 0 与答案 1 用渲染浏览器取表。先核对显示日期、站名/ICAO、当地时区和抓取锚点。只出现摘要、日期不一致或字段不足时，必须标记失败而非输出虚假的 24 小时序列。
 3. 如需过去 72 小时发布 TAF，使用 Ogimet 表单。把当地窗口换为 UTC，保存 `display_metars2.php` 的完整 URL 与 TXT/HTML。返回空页或无 TAF 时，只保留当前 TAF 的作业 1 结果并把历史项标为 `null`。
 4. 运行 `scripts/normalize_weather_bundle.py`。它每模型严格截取 72 条历史整点和 24 条未来整点，输出 CSV、网格元数据、METAR 实际观测、请求状态和覆盖审计。
@@ -50,13 +54,13 @@ Open-Meteo 依次请求 `ecmwf_ifs`、`ecmwf_aifs025_single`、`gfs_seamless`、
 
 ## 固定输出顺序
 
-按此顺序提供：`作业 0（WU 未来）`、`作业 1（TAF）`、`作业 2（ECMWF IFS）`、`作业 3（ECMWF AIFS）`、`作业 4（GFS）`、`作业 5（ICON）`、`作业 6（best_match）`、`答案 1（WU 历史）`、`答案 2（METAR）`。
+按此顺序提供：`作业 0（WU 未来）`、`作业 1（TAF）`、`作业 2（ECMWF IFS）`、`作业 3（ECMWF AIFS）`、`作业 4（GFS）`、`作业 5（ICON）`、`作业 6（best_match）`、`作业 9（CMA GFS GRAPES）`、`作业 10（Météo-France ARPEGE World）`、`答案 1（WU 历史）`、`答案 2（METAR）`。把 DWD ICON、NOAA GFS、ECMWF IFS/AIFS 的工作簿专属参数核验写入来源审计，不与原作业重复计数。
 
 模式作业必须记录请求模型、实际返回的网格纬度/经度、海拔、返回时区/单位、抓取时间和完整 URL。没有来自接口响应或官方资料的分辨率信息时，写“未在本次响应确认”。
 
 ## 已验证的 ZGGG 运行
 
-ZGGG（23.3933°N, 113.3083°E）实测可得到五个 Open-Meteo 模型各 72 条历史整点和 24 条未来整点，字段含温度、降水、雨量与分层云量。AWC METAR 成功返回实际约 30 分钟间隔记录。AWC 当前 TAF 最小参数请求成功；`format=raw` 被拒绝，`format=json&hours=72` 在该次运行 HTTP 504。因此，只有成功取到的数据可称“成功”；历史 TAF 或 WU 分时页失败时必须照实报告。
+ZGGG（23.3933°N, 113.3083°E）实测可得到五个原始 Open-Meteo 模型各 72 条历史整点和 24 条未来整点，字段含温度、降水、雨量与分层云量。新增工作簿核验中，DWD ICON、NOAA GFS、ECMWF IFS 0.25°/HRES/AIFS、ARPEGE World、UKMO Global、JMA GSM、GEM Global、CMA GFS GRAPES、AIGFS、HGEFS ensemble mean 均返回完整非空 72+24；ACCESS-G 与 IFS 0.4°虽返回时间列但目标变量全为 `null`。AWC METAR 成功返回实际约 30 分钟间隔记录。AWC 当前 TAF 最小参数请求成功；`format=raw` 被拒绝，`format=json&hours=72` 在该次运行 HTTP 504。因此，只有成功取到的数据可称“成功”；历史 TAF 或 WU 分时页失败时必须照实报告。
 
 ## 资源
 

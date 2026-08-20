@@ -19,7 +19,15 @@ from zoneinfo import ZoneInfo
 import requests
 
 HOURLY = ["temperature_2m", "precipitation", "rain", "cloud_cover", "cloud_cover_low", "cloud_cover_mid", "cloud_cover_high"]
-MODELS = ["ecmwf_ifs", "ecmwf_aifs025_single", "gfs_seamless", "icon_seamless", "best_match"]
+# First five preserve the original homework set. The remaining explicit identifiers cover
+# additional global providers listed in the workbook. Keep each response separate; never
+# use another model to fill a failed or all-null model.
+MODELS = [
+    "ecmwf_ifs", "ecmwf_aifs025_single", "gfs_seamless", "icon_seamless", "best_match",
+    "dwd_icon_global", "ncep_gfs_global", "ecmwf_ifs04", "ecmwf_ifs025",
+    "arpege_world", "ukmo_global_deterministic_10km", "jma_gsm", "gem_global",
+    "bom_access_global", "cma_grapes_global", "ncep_aigfs025", "ncep_hgefs025_ensemble_mean",
+]
 
 
 def iso_now() -> str:
@@ -57,7 +65,7 @@ def request_evidence(session: requests.Session, raw_dir: Path, label: str, url: 
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Fetch raw weather evidence for one airport/coordinate.")
+    parser = argparse.ArgumentParser(description="Fetch auditable raw evidence for an airport/coordinate, including original and workbook global models.")
     parser.add_argument("--icao", required=True)
     parser.add_argument("--lat", type=float, required=True)
     parser.add_argument("--lon", type=float, required=True)

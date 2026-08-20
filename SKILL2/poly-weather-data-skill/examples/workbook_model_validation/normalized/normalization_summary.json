@@ -1,0 +1,23 @@
+{
+  "generated_at_local": "2026-08-21T03:23:03.221750+08:00",
+  "rows": 1344,
+  "successful_non_null_models": [
+    "dwd_icon_global",
+    "noaa_gfs_global",
+    "ecmwf_ifs_025",
+    "ecmwf_ifs_hres",
+    "ecmwf_aifs_025_single",
+    "meteofrance_arpege_world",
+    "ukmo_global",
+    "jma_gsm",
+    "gem_global",
+    "cma_gfs_grapes",
+    "noaa_aigfs",
+    "noaa_hgefs_ensemble_mean"
+  ],
+  "complete_but_all_null_models": [
+    "ecmwf_ifs_04",
+    "bom_access_g"
+  ],
+  "failed_models": []
+}
