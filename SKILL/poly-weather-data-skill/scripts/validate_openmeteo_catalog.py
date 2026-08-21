@@ -13,13 +13,24 @@ from fetch_openmeteo_bundle import MODEL_CATALOG, VARIABLES, quality
 
 
 def get_json(url: str) -> tuple[int | None, dict | None, str | None]:
-    try:
-        with urlopen(url, timeout=90) as response:  # nosec B310: fixed trusted Open-Meteo endpoints
-            return response.status, json.loads(response.read().decode("utf-8")), None
-    except HTTPError as error:
-        return error.code, None, f"HTTPError: {error.reason}"
-    except URLError as error:
-        return None, None, f"URLError: {error.reason}"
+    """GET with retry/backoff (3 attempts, 2/5/10s; 404/400 deterministic)."""
+    import socket
+    import time
+
+    last_err = None
+    for attempt in range(3):
+        try:
+            with urlopen(url, timeout=30) as response:  # nosec B310: fixed trusted Open-Meteo endpoints
+                return response.status, json.loads(response.read().decode("utf-8")), None
+        except HTTPError as error:
+            if error.code in (404, 400):
+                return error.code, None, f"HTTPError: {error.reason}"
+            last_err = error
+        except (URLError, TimeoutError, OSError, socket.timeout) as error:
+            last_err = error
+        if attempt < 2:
+            time.sleep((2, 5, 10)[attempt])
+    return None, None, f"after retries: {last_err}"
 
 
 def endpoint(base: str, common: dict[str, str | float], start: str | None, end: str | None, hours: int | None) -> str:

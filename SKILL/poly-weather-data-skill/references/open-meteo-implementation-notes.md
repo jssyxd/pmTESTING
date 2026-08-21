@@ -32,3 +32,9 @@ ECMWF变量定义确认`temperature_2m`为摄氏度、`precipitation`为毫米�
 ## 官方端点路由
 
 `ForecastapiController.swift`表明`/v1/forecast`是共用控制器，且`historical-forecast-api`、`previous-runs-api`、`single-runs-api`均为同一预测处理器的主机别名；提供方专用路由包括`/v1/ecmwf`（默认`ecmwf_ifs025`）、`/v1/cma`（默认`cma_grapes_global`）与`/v1/gfs`（默认GFS无缝路由）。对于可复现的回测，技能包将优先采用历史预报端点并显式传入模型，不使用`best_match`或提供方默认模型；只有在显式模型失败时才按预先声明的回退顺序尝试其他模型。
+
+## 结算站当地日历日窗口（v2 修正）
+
+`timezone` 参数与 `start_date`/`end_date` 必须以结算站当地 IANA 时区表达，且历史/未来窗口使用**当地日历日**（历史 = 锚点前 72 小时所在当地日 至 锚点所在当地日；未来 = 锚点所在当地日 至 锚点后 24 小时所在当地日，均含起止日整日），由锚点换算，不得为全城共用一组固定 UTC 日期。首轮运行曾以固定 UTC 日期请求（`pull_run.log` 首个 PULL_START 的 history_start=2026-08-17），导致 UTC+8 城市历史窗口末端缺失约 4–5 小时，经 REFETCH_OM 段改为当地日历日后修复（上海 history `2026-08-18..2026-08-21`、丹佛 `2026-08-17..2026-08-20`）。此为先例，勿再犯。
+
+响应时间为无时区后缀的当地字符串；转换为 UTC 必须使用响应自身的 `utc_offset_seconds`（`naive - offset`），**不得**依赖主机系统时区（Windows 无 IANA 库时尤甚）。
